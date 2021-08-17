@@ -1,18 +1,13 @@
 require("isomorphic-fetch");
 const amqp = require("amqplib");
 
-send();
+//send();
 
-async function send() {
+async function send(parsedMsg) {
   try {
     const connection = await amqp.connect("amqp://localhost:5672");
     const channel = await connection.createChannel();
     const result = await channel.assertQueue("publisher-send");
-    const message = await fetch(
-      " https://t0rlh3a3bj.execute-api.ap-south-1.amazonaws.com/stage"
-    );
-    const parsedMsg = await message.json();
-    console.log(parsedMsg);
     channel.sendToQueue("publisher-send", Buffer.from(parsedMsg));
     console.log("Message sent");
   } catch (ex) {
@@ -20,7 +15,7 @@ async function send() {
   }
 }
 
-receive();
+//receive();
 
 async function receive() {
   try {
@@ -35,3 +30,8 @@ async function receive() {
     console.log(ex);
   }
 }
+
+module.exports = {
+  publisherReceive: receive,
+  publisherSend: send,
+};
