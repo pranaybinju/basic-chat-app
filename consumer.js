@@ -19,11 +19,11 @@ async function receive() {
     const connection = await amqp.connect("amqp://localhost:5672");
     const channel = await connection.createChannel();
     const result = await channel.assertQueue("publisher-send");
-    channel.consume("publisher-send", (msg) => {
-      console.log("From consumer with love");
-      console.log(msg.content.toString());
+    let message = "";
+    await channel.consume("publisher-send", (msg) => {
+      message = msg.content.toString();
     });
-    console.log("Message received");
+    return message;
   } catch (ex) {
     console.log(ex);
   }
