@@ -1,5 +1,6 @@
 require("isomorphic-fetch");
 const amqp = require("amqplib");
+const eventEmitterModule = require("./emitter.js");
 
 //send();
 
@@ -9,6 +10,7 @@ async function send(parsedMsg) {
     const channel = await connection.createChannel();
     const result = await channel.assertQueue("publisher-send");
     channel.sendToQueue("publisher-send", Buffer.from(parsedMsg));
+    eventEmitter.emit("messageReceived");
     console.log("Message sent");
   } catch (ex) {
     console.log(ex);

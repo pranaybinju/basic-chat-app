@@ -6,25 +6,32 @@ const consumer = require("./consumer.js");
 
 const express = require("express");
 const app = express();
-let count = 2;
+let count = 4;
 
 app.use(
   cors({
     origin: "*",
   })
 );
+app.use(express.json());
 
 app.get("/", async function (req, res) {
   res.send("Hello");
 });
 
-app.get("/postMessage", function (req, res, next) {
+app.post("/postMessage", function (req, res, next) {
+  console.log(req.body);
   fetch("https://pquco5qmd3.execute-api.ap-south-1.amazonaws.com/items", {
     method: "PUT",
-    body: JSON.stringify({ id: 2, message: "Hello" }),
+    mode: "cors",
+    headers: {
+      "Content-Type": "application/json",
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: JSON.stringify({ id: count.toString(), message: req.body.message }),
   }).then((message) => {
-    console.log(message);
-    res.send(message);
+    count++;
+    res.send("Send");
   });
 });
 
@@ -51,6 +58,7 @@ const sendMiddleware = function (req, res, next, parsedMsg) {
 
 const receiveMiddleware = async function (req, res, next) {
   const message = consumer.consumerReceive();
+
   return message;
 };
 
